@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  tf-k8s-repo-template:
+    environment:
+      PERSISTENT_VOLUMES_ROOT: ${HOME}/dev/volumes/nextjs-grpc
+    extra_hosts:
+      tf-k8s-repo-template.templates.utkusarioglu.com: host-gateway

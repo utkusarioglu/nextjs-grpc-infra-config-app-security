@@ -1,0 +1,25 @@
+{
+  "name": "tf-k8s-repo-template.templates.utkusarioglu.com",
+  "dockerComposeFile": [
+    "../.docker/docker-compose.dev.yml",
+    "../.docker/docker-compose.common.yml",
+    "docker-compose.yml"
+  ],
+  "postCreateCommand": "scripts/post-create-command.sh",
+  "service": "tf-k8s-repo-template",
+  "workspaceFolder": "/utkusarioglu-com/templates/tf-k8s-repo-template",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "hashicorp.terraform",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+      ],
+      "settings": {
+        "workbench.colorCustomizations": {
+          "activityBar.background": "#171244"
+        }
+      }
+    }
+  }
+}

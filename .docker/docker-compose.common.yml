@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  tf-k8s-repo-template:
+    container_name: tf-k8s-repo-template
+    image: utkusarioglu/tf-k8s-devcontainer:1.2.18
+    environment:
+      TZ: Etc/UTC0
+      TARGET_VOLUMES_ROOT: /var/lib/rancher/k3s/storage
+      CLUSTER_REGION: eu-central-1
+    volumes:
+      - type: bind
+        source: ..
+        target: /utkusarioglu-com/templates/tf-k8s-repo-template
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
