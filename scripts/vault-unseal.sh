@@ -3,6 +3,7 @@
 artifacts_folder=artifacts
 artifact_file="$artifacts_folder/init.json"
 root_token_file="$artifacts_folder/root.token.json"
+vault_token_file="$artifacts_folder/.vault-token"
 
 unseal() {
   sealed_pods=$@
@@ -18,8 +19,8 @@ unseal() {
 
     if [ $pod == "vault-0" ] && [[ "$sealed_pods" == *"vault-0"* ]]; then
       echo "Cleaning artifacts folder"
-      rm -rf $artifacts_folder
-      mkdir -p $artifacts_folder
+      rm -rf "$artifacts_folder"
+      mkdir -p "$artifacts_folder"
     fi
 
     sleep 3;
@@ -67,10 +68,12 @@ unseal() {
         -format=json "$root_token" > \
         $root_token_file
       echo "You can find your root token at '$root_token_file'"
+      cat $artifact_file | jq -r .root_token > $vault_token_file
+      echo "Use $vault_token_file for other terraform configs that need vault"
     fi
 
     echo "Finished unseal for '$pod'"
-    echo
+    echo 
   done
 }
 
