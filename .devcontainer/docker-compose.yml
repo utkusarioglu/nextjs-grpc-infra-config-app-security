@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  tf-k8s-repo-template:
+  nextjs-grpc-infra-config-app-security:
     command: /bin/sh -c "while sleep 1000; do :; done"
     volumes:
       - type: volume
@@ -22,8 +22,8 @@ services:
 
 volumes:
   vscode-extensions:
-    name: tf-k8s-repo-template-vscode-extensions
+    name: nextjs-grpc-infra-config-app-security-vscode-extensions
   vscode-extensions-insiders:
-    name: tf-k8s-repo-template-vscode-extensions-insiders
+    name: nextjs-grpc-infra-config-app-security-vscode-extensions-insiders
   go:
-    name: tf-k8s-repo-template-go
+    name: nextjs-grpc-infra-config-app-security-go
