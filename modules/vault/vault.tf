@@ -4,7 +4,7 @@ resource "helm_release" "vault" {
   repository      = "https://helm.releases.hashicorp.com"
   chart           = "vault"
   version         = "0.22.0"
-  namespace       = "vault"
+  namespace       = kubernetes_namespace.this.metadata[0].name
   cleanup_on_fail = true
   lint            = true
 

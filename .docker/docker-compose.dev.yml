@@ -6,3 +6,4 @@ services:
       PERSISTENT_VOLUMES_ROOT: ${HOME}/dev/volumes/nextjs-grpc
     extra_hosts:
       security.app.configs.infra.nextjs-grpc.projects.utkusarioglu.com: host-gateway
+      local.targets.infra.nextjs-grpc.projects.utkusarioglu.com: host-gateway
