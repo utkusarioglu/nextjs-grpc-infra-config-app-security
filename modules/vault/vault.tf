@@ -1,5 +1,5 @@
 resource "helm_release" "vault" {
-  count           = 1
+  count           = local.deployment_configs.vault.count
   name            = "vault"
   repository      = "https://helm.releases.hashicorp.com"
   chart           = "vault"
@@ -7,6 +7,8 @@ resource "helm_release" "vault" {
   namespace       = kubernetes_namespace.this.metadata[0].name
   cleanup_on_fail = true
   lint            = true
+  atomic          = var.helm_atomic
+  timeout         = var.helm_timeout_unit
 
   values = [
     yamlencode({
@@ -62,7 +64,7 @@ resource "helm_release" "vault" {
             setNodeId = true
             config    = <<-EOF
               ui = true
-              api_addr = "http://nextjs-grpc.utkusarioglu.com:8200"
+              api_addr = "http://${var.sld}.vault-ui.${var.tld}:8200"
               cluster_addr = "http://vault-0.vault-internal:8201"
 
               listener "tcp" {
