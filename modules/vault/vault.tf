@@ -64,7 +64,7 @@ resource "helm_release" "vault" {
             setNodeId = true
             config    = <<-EOF
               ui = true
-              api_addr = "http://${var.sld}.vault-ui.${var.tld}:8200"
+              api_addr = "http://vault-ui.${var.sld}.${var.tld}:8200"
               cluster_addr = "http://vault-0.vault-internal:8201"
 
               listener "tcp" {
