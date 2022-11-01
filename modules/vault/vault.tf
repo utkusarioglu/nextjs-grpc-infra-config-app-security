@@ -29,6 +29,20 @@ resource "helm_release" "vault" {
         nodeSelector = {
           vault_in_k8s = "true"
         }
+        ingress = {
+          enabled = true
+          annotations = {
+            "kubernetes.io/ingress.class" = "public"
+          }
+          hosts = [
+            {
+              host = "vault-ui.${var.sld}.${var.tld}"
+              paths = [
+                "/"
+              ]
+            }
+          ]
+        }
         affinity = {
           podAntiAffinity = {
             requiredDuringSchedulingIgnoredDuringExecution = [
@@ -64,7 +78,7 @@ resource "helm_release" "vault" {
             setNodeId = true
             config    = <<-EOF
               ui = true
-              api_addr = "http://vault-ui.${var.sld}.${var.tld}:8200"
+              api_addr = "https://vault.${var.sld}.${var.tld}"
               cluster_addr = "http://vault-0.vault-internal:8201"
 
               listener "tcp" {
@@ -120,7 +134,7 @@ resource "helm_release" "vault" {
 
       ui = {
         enabled         = true
-        serviceType     = "LoadBalancer"
+        serviceType     = "ClusterIP"
         serviceNodePort = null
         externalPort    = 8200
       }
