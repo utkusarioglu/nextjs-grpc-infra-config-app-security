@@ -36,7 +36,7 @@ resource "helm_release" "vault" {
           }
           hosts = [
             {
-              host = "vault-ui.${var.sld}.${var.tld}"
+              host = "vault.${var.sld}.${var.tld}"
               paths = [
                 "/"
               ]
