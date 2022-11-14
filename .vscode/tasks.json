@@ -270,7 +270,7 @@
     {
       "id": "clusterName",
       "description": "Cluster name",
-      "default": "tf-k8s-repo-template",
+      "default": "nextjs-grpc-infra-config-app-security",
       "type": "promptString"
     },
     {
