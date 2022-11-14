@@ -1,13 +1,13 @@
 {
-  "name": "tf-k8s-repo-template.templates.utkusarioglu.com",
+  "name": "security.app.configs.infra.nextjs-grpc.projects.utkusarioglu.com",
   "dockerComposeFile": [
     "../.docker/docker-compose.dev.yml",
     "../.docker/docker-compose.common.yml",
     "docker-compose.yml"
   ],
   "postCreateCommand": "scripts/post-create-command.sh",
-  "service": "tf-k8s-repo-template",
-  "workspaceFolder": "/utkusarioglu-com/templates/tf-k8s-repo-template",
+  "service": "nextjs-grpc-infra-config-app-security",
+  "workspaceFolder": "/utkusarioglu-com/projects/nextjs-grpc/infra/configs/app/security",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -17,7 +17,7 @@
       ],
       "settings": {
         "workbench.colorCustomizations": {
-          "activityBar.background": "#171244"
+          "activityBar.background": "#AA1244"
         }
       }
     }

@@ -1,4 +1,4 @@
-module utkusarioglu.com/templates/tf-k8s-repo-template
+module github.com/utkusarioglu/nextjs-grpc-infra-config-app-security
 
 go 1.18
 

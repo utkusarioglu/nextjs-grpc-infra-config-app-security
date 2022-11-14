@@ -1,8 +1,8 @@
 version: "3.9"
 
 services:
-  tf-k8s-repo-template:
-    container_name: tf-k8s-repo-template
+  nextjs-grpc-infra-config-app-security:
+    container_name: nextjs-grpc-infra-config-app-security
     image: utkusarioglu/tf-k8s-devcontainer:1.2.18
     environment:
       TZ: Etc/UTC0
@@ -11,7 +11,7 @@ services:
     volumes:
       - type: bind
         source: ..
-        target: /utkusarioglu-com/templates/tf-k8s-repo-template
+        target: /utkusarioglu-com/projects/nextjs-grpc/infra/configs/app/security
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
