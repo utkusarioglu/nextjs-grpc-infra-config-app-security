@@ -18,3 +18,5 @@ provider "local" {}
 provider "null" {}
 
 provider "time" {}
+
+provider "tls" {}

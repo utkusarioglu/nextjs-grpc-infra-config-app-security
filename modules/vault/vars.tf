@@ -22,3 +22,18 @@ variable "sld" {
 variable "tld" {
   type = string
 }
+
+variable "secrets_path" {
+  type        = string # path
+  description = "Root path where the configuration secrets are kept"
+}
+
+variable "assets_path" {
+  type        = string # path
+  description = "Root path where the non-secrets assets for the configuration are kept"
+}
+
+variable "vault_subdomain" {
+  type        = string # url subdomain
+  description = "The subdomain from which the vault will be publicly exposed"
+}

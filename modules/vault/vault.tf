@@ -14,7 +14,7 @@ resource "helm_release" "vault" {
     yamlencode({
       global = {
         enabled    = true
-        tlsDisable = true
+        tlsDisable = false
         # serverTelemetry = {
         #   prometheusOperator = true
         # }
@@ -36,12 +36,82 @@ resource "helm_release" "vault" {
           }
           hosts = [
             {
-              host = "vault.${var.sld}.${var.tld}"
+              host = "${var.vault_subdomain}.${var.sld}.${var.tld}"
               paths = [
                 "/"
               ]
             }
           ]
+          # tls = [
+          #   {
+          #     secretName = "vault-api-tls-cert"
+          #     host       = "${var.vault_subdomain}.${var.sld}.${var.tld}"
+          #     paths = [
+          #       "/"
+          #     ]
+          #   }
+          # ]
+        }
+        volumes = [
+          {
+            name = "vault-raft-tls-cert"
+            secret = {
+              secretName = kubernetes_secret.vault_raft_tls_cert[0].metadata[0].name
+              optional   = false
+              # items = [
+              #   {
+              #     key  = "tls.crt"
+              #     path = "vault.crt"
+              #   },
+              #   {
+              #     key  = "tls.key"
+              #     path = "vault.key"
+              #   },
+              #   {
+              #     key  = "ca.crt"
+              #     path = "ca.crt"
+              #   }
+              # ]
+            }
+          },
+          # {
+          #   name = "vault-api-tls-cert"
+          #   secret = {
+          #     secretName = kubernetes_secret.vault_api_tls_cert[0].metadata[0].name
+          #     optional   = false
+          #     # items = [
+          #     #   {
+          #     #     key  = "tls.crt"
+          #     #     path = "vault.crt"
+          #     #   },
+          #     #   {
+          #     #     key  = "tls.key"
+          #     #     path = "vault.key"
+          #     #   },
+          #     #   {
+          #     #     key  = "ca.crt"
+          #     #     path = "ca.crt"
+          #     #   }
+          #     # ]
+          #   }
+          # }
+        ]
+        volumeMounts = [
+          {
+            name      = "vault-raft-tls-cert"
+            mountPath = "/vault/ssl/raft"
+            readOnly  = true
+          },
+          # {
+          #   name      = "vault-api-tls-cert"
+          #   mountPath = "/vault/ssl/api"
+          #   readOnly  = true
+          # }
+        ]
+        extraEnvironmentVars = {
+          VAULT_ADDR     = "https://127.0.0.1:8200"
+          VAULT_API_ADDR = "https://$(POD_IP):8200"
+          VAULT_CACERT   = "/vault/ssl/raft/ca.crt"
         }
         affinity = {
           podAntiAffinity = {
@@ -76,49 +146,17 @@ resource "helm_release" "vault" {
           raft = {
             enabled   = true
             setNodeId = true
-            config    = <<-EOF
-              ui = true
-              api_addr = "https://vault.${var.sld}.${var.tld}"
-              cluster_addr = "http://vault-0.vault-internal:8201"
-
-              listener "tcp" {
-                address     = "[::]:8200"
-                cluster_address = "[::]:8201"
-                tls_disable = 1
-                
-                telemetry {
-                  unauthenticated_metrics_access = "true"
-                }
-              }
-
-              storage "raft" {
-                path = "/vault/data"
-                setNodeId = true
-
-                retry_join {
-                  leader_api_addr = "http://vault-0.vault-internal:8200"
-                }
-
-                retry_join {
-                  leader_api_addr = "http://vault-1.vault-internal:8200"
-                }
-
-                retry_join {
-                  leader_api_addr = "http://vault-2.vault-internal:8200"
-                }
-
-                autopilot {
-                  cleanup_dead_servers = "true"
-                  last_contact_threshold = "200ms"
-                  last_contact_failure_threshold = "10m"
-                  max_trailing_logs = 250000
-                  min_quorum = 3
-                  server_stabilization_time = "10s"
-                }
-              }
-
-              service_registration "kubernetes" {}
-            EOF
+            config = templatefile("${var.assets_path}/vault.ha.config.tftpl.hcl", {
+              sld                     = var.sld
+              tld                     = var.tld
+              leader_ca_cert_file     = "/vault/ssl/raft/ca.crt"
+              leader_client_cert_file = "/vault/ssl/raft/tls.crt"
+              leader_client_key_file  = "/vault/ssl/raft/tls.key"
+              vault_subdomain         = var.vault_subdomain
+              tls_client_ca_file      = "/vault/ssl/raft/ca.crt"
+              tls_cert_file           = "/vault/ssl/raft/tls.crt"
+              tls_key_file            = "/vault/ssl/raft/tls.key"
+            })
           }
         }
       }

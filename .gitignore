@@ -50,3 +50,5 @@ terraform.rc
 *.pr.md
 /.certs
 /artifacts
+/secrets
+.certs

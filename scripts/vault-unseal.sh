@@ -44,7 +44,7 @@ unseal() {
     if [ "$pod" != "vault-0" ]; then
     echo "Joining $pod to 'vault-0'…"
     kubectl -n vault exec "$pod" -- vault operator raft join \
-      http://vault-0.vault-internal:8200 1> \
+      https://vault-0.vault-internal:8200 1> \
       /dev/null
     fi
 
