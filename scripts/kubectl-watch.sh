@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source scripts/config.sh || exit 1
+source scripts/terraform-checks.sh || exit 2
+
 check_env
 check_repo_config
 
