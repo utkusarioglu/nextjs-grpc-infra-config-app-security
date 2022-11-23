@@ -1,5 +1,5 @@
 ui = true
-api_addr = "http://${vault_subdomain}.${sld}.${tld}"
+api_addr = "https://${vault_subdomain}.${sld}.${tld}"
 cluster_addr = "https://vault-0.vault-internal:8201"
 
 listener "tcp" {
@@ -17,21 +17,21 @@ storage "raft" {
 
   retry_join {
     leader_api_addr = "https://vault-0.vault-internal:8200"
-    leader_ca_cert_file = "${leader_ca_cert_file}"
+    leader_ca_cert_file = "${tls_client_ca_file}"
     leader_client_cert_file = "${leader_client_cert_file}"
     leader_client_key_file = "${leader_client_key_file}"
   }
 
   retry_join {
     leader_api_addr = "https://vault-1.vault-internal:8200"
-    leader_ca_cert_file = "${leader_ca_cert_file}"
+    leader_ca_cert_file = "${tls_client_ca_file}"
     leader_client_cert_file = "${leader_client_cert_file}"
     leader_client_key_file = "${leader_client_key_file}"
   }
 
   retry_join {
     leader_api_addr = "https://vault-2.vault-internal:8200"
-    leader_ca_cert_file = "${leader_ca_cert_file}"
+    leader_ca_cert_file = "${tls_client_ca_file}"
     leader_client_cert_file = "${leader_client_cert_file}"
     leader_client_key_file = "${leader_client_key_file}"
   }

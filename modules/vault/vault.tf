@@ -32,8 +32,10 @@ resource "helm_release" "vault" {
         ingress = {
           enabled = true
           annotations = {
-            "kubernetes.io/ingress.class" = "public"
+            "kubernetes.io/ingress.class" = "public",
+            "kubernetes.io/tls-acme"      = "true"
           }
+          activeService = true
           hosts = [
             {
               host = "${var.vault_subdomain}.${var.sld}.${var.tld}"
@@ -42,15 +44,15 @@ resource "helm_release" "vault" {
               ]
             }
           ]
-          # tls = [
-          #   {
-          #     secretName = "vault-api-tls-cert"
-          #     host       = "${var.vault_subdomain}.${var.sld}.${var.tld}"
-          #     paths = [
-          #       "/"
-          #     ]
-          #   }
-          # ]
+          tls = [
+            {
+              secretName = "vault-api-tls-cert"
+              host       = "${var.vault_subdomain}.${var.sld}.${var.tld}"
+              # paths = [
+              #   "/*"
+              # ]
+            }
+          ]
         }
         volumes = [
           {
@@ -58,43 +60,15 @@ resource "helm_release" "vault" {
             secret = {
               secretName = kubernetes_secret.vault_raft_tls_cert[0].metadata[0].name
               optional   = false
-              # items = [
-              #   {
-              #     key  = "tls.crt"
-              #     path = "vault.crt"
-              #   },
-              #   {
-              #     key  = "tls.key"
-              #     path = "vault.key"
-              #   },
-              #   {
-              #     key  = "ca.crt"
-              #     path = "ca.crt"
-              #   }
-              # ]
             }
           },
-          # {
-          #   name = "vault-api-tls-cert"
-          #   secret = {
-          #     secretName = kubernetes_secret.vault_api_tls_cert[0].metadata[0].name
-          #     optional   = false
-          #     # items = [
-          #     #   {
-          #     #     key  = "tls.crt"
-          #     #     path = "vault.crt"
-          #     #   },
-          #     #   {
-          #     #     key  = "tls.key"
-          #     #     path = "vault.key"
-          #     #   },
-          #     #   {
-          #     #     key  = "ca.crt"
-          #     #     path = "ca.crt"
-          #     #   }
-          #     # ]
-          #   }
-          # }
+          {
+            name = "vault-api-tls-cert"
+            secret = {
+              secretName = kubernetes_secret.vault_api_tls_cert[0].metadata[0].name
+              optional   = false
+            }
+          }
         ]
         volumeMounts = [
           {
@@ -102,16 +76,16 @@ resource "helm_release" "vault" {
             mountPath = "/vault/ssl/raft"
             readOnly  = true
           },
-          # {
-          #   name      = "vault-api-tls-cert"
-          #   mountPath = "/vault/ssl/api"
-          #   readOnly  = true
-          # }
+          {
+            name      = "vault-api-tls-cert"
+            mountPath = "/vault/ssl/api"
+            readOnly  = true
+          }
         ]
         extraEnvironmentVars = {
           VAULT_ADDR     = "https://127.0.0.1:8200"
           VAULT_API_ADDR = "https://$(POD_IP):8200"
-          VAULT_CACERT   = "/vault/ssl/raft/ca.crt"
+          VAULT_CACERT   = "/vault/ssl/api/ca.crt"
         }
         affinity = {
           podAntiAffinity = {
@@ -147,15 +121,15 @@ resource "helm_release" "vault" {
             enabled   = true
             setNodeId = true
             config = templatefile("${var.assets_path}/vault.ha.config.tftpl.hcl", {
-              sld                     = var.sld
-              tld                     = var.tld
-              leader_ca_cert_file     = "/vault/ssl/raft/ca.crt"
+              sld = var.sld
+              tld = var.tld
+              # leader_ca_cert_file     = "/vault/ssl/api/ca.crt"
               leader_client_cert_file = "/vault/ssl/raft/tls.crt"
               leader_client_key_file  = "/vault/ssl/raft/tls.key"
               vault_subdomain         = var.vault_subdomain
-              tls_client_ca_file      = "/vault/ssl/raft/ca.crt"
-              tls_cert_file           = "/vault/ssl/raft/tls.crt"
-              tls_key_file            = "/vault/ssl/raft/tls.key"
+              tls_client_ca_file      = "/vault/ssl/api/ca.crt"
+              tls_cert_file           = "/vault/ssl/api/tls.crt"
+              tls_key_file            = "/vault/ssl/api/tls.key"
             })
           }
         }
@@ -172,7 +146,7 @@ resource "helm_release" "vault" {
 
       ui = {
         enabled         = true
-        serviceType     = "ClusterIP"
+        serviceType     = "LoadBalancer"
         serviceNodePort = null
         externalPort    = 8200
       }

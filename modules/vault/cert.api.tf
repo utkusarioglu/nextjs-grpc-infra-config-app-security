@@ -16,12 +16,19 @@ resource "tls_cert_request" "vault_api_csr" {
   }
 
   dns_names = [
-    "vault.${var.sld}.${var.tld}"
+    "vault.${var.sld}.${var.tld}",
+    "vault-0.vault-internal",
+    "vault-1.vault-internal",
+    "vault-2.vault-internal",
+
+    # "vault-0.vault-active",
+    # "vault-1.vault-active",
+    # "vault-2.vault-active",
   ]
 
-  # ip_addresses = [
-  #   "127.0.0.1"
-  # ]
+  ip_addresses = [
+    "127.0.0.1"
+  ]
 }
 
 resource "tls_locally_signed_cert" "vault_api" {
@@ -47,15 +54,13 @@ resource "kubernetes_secret" "vault_api_tls_cert" {
   }
 
   type = "kubernetes.io/tls"
-  #   type = "kubernetes.io/tls"
   data = {
     "tls.key" = tls_private_key.vault_api_pk[0].private_key_pem
     "tls.crt" = join("", [
       tls_locally_signed_cert.vault_api[0].cert_pem,
-      file(".certs/intermediate/intermediate.crt")
-      # kubernetes_certificate_signing_request_v1.vault_api_csr[0].certificate,
-      # base64decode(data.external.ca.result.ca_crt)
+      file(".certs/intermediate/intermediate.crt"),
+      file(".certs/root/root.crt"),
     ])
-    "ca.crt" = file(".certs/intermediate/intermediate.crt")
+    "ca.crt" = file(".certs/root/root.crt")
   }
 }
