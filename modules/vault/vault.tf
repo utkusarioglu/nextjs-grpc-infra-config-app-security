@@ -33,7 +33,13 @@ resource "helm_release" "vault" {
           enabled = true
           annotations = {
             "kubernetes.io/ingress.class" = "public",
-            "kubernetes.io/tls-acme"      = "true"
+            # "kubernetes.io/tls-acme"      = "true",
+
+            # "kubernetes.io/ingress.allow-http" : "false"
+            # "nginx.ingress.kubernetes.io/force-ssl-redirect" : "true"
+            # "nginx.ingress.kubernetes.io/ssl-passthrough" : "true"
+            # "nginx.ingress.kubernetes.io/backend-protocol" : "HTTPS"
+            # "nginx.ingress.kubernetes.io/whitelist-source-range" : "127.0.0.1"
           }
           activeService = true
           hosts = [

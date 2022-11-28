@@ -17,13 +17,8 @@ resource "tls_cert_request" "vault_api_csr" {
 
   dns_names = [
     "vault.${var.sld}.${var.tld}",
-    "vault-0.vault-internal",
-    "vault-1.vault-internal",
-    "vault-2.vault-internal",
-
-    # "vault-0.vault-active",
-    # "vault-1.vault-active",
-    # "vault-2.vault-active",
+    "vault.vault",
+    "*.vault-internal",
   ]
 
   ip_addresses = [
