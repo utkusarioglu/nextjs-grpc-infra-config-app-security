@@ -9,4 +9,7 @@ module "vault" {
   vault_subdomain   = "vault"
   assets_path       = var.assets_path
   secrets_path      = var.secrets_path
+  tls_crt           = local.certs.intermediate.cert
+  tls_key           = local.certs.intermediate.key
+  ca_crt            = local.certs.ca.cert
 }

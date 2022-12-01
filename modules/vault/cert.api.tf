@@ -30,8 +30,8 @@ resource "tls_locally_signed_cert" "vault_api" {
   count = local.deployment_configs.vault.count
 
   cert_request_pem   = tls_cert_request.vault_api_csr[0].cert_request_pem
-  ca_cert_pem        = file(".certs/intermediate/intermediate.crt")
-  ca_private_key_pem = file(".certs/intermediate/intermediate.key")
+  ca_cert_pem        = local.certs.vault.cert
+  ca_private_key_pem = local.certs.vault.key
 
   validity_period_hours = 12
 
@@ -53,9 +53,8 @@ resource "kubernetes_secret" "vault_api_tls_cert" {
     "tls.key" = tls_private_key.vault_api_pk[0].private_key_pem
     "tls.crt" = join("", [
       tls_locally_signed_cert.vault_api[0].cert_pem,
-      file(".certs/intermediate/intermediate.crt"),
-      file(".certs/root/root.crt"),
+      local.certs.vault.bundle
     ])
-    "ca.crt" = file(".certs/root/root.crt")
+    "ca.crt" = local.certs.vault.ca
   }
 }
